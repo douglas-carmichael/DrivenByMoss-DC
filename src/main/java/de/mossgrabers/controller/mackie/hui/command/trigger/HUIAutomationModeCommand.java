@@ -20,6 +20,17 @@ public class HUIAutomationModeCommand extends AutomationModeCommand<HUIControlSu
         this.display = display;
     }
 
+    private void illuminateLEDs(int ledState)
+    {
+        int channel = 0;
+        int[] huiControlArray = {HUIControlSurface.HUI_SELECT1, HUIControlSurface.HUI_SELECT2, HUIControlSurface.HUI_SELECT3,
+                HUIControlSurface.HUI_SELECT4, HUIControlSurface.HUI_SELECT5, HUIControlSurface.HUI_SELECT6,
+                HUIControlSurface.HUI_SELECT7, HUIControlSurface.HUI_SELECT8};
+        for (int i = 0; i < huiControlArray.length; i++) {
+            int huiControl = huiControlArray[i] + channel * 8;
+            this.surface.setTrigger(0, huiControl, ledState);
+        }
+    }
 
     @Override
     public void executeNormal(final ButtonEvent event)
@@ -29,7 +40,9 @@ public class HUIAutomationModeCommand extends AutomationModeCommand<HUIControlSu
             final AutomationMode mode = this.model.getTransport().getAutomationWriteMode();
             if (mode == this.ourAutomationMode) {
                 if (this.surface.getConfiguration().shouldNotifyAutomationMode()) {
+                    this.illuminateLEDs(127);
                     this.display.notifyHUIDisplay("Automation: " + mode.name());
+                    this.illuminateLEDs(0);
                 }
             }
     }
